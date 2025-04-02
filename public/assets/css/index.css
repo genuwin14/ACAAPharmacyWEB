@@ -1,0 +1,33 @@
+/* Custom Card Height */
+.custom-card {
+    height: 200px;
+    background-color: #ffecb4;
+    border-radius: 15px;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.custom-card .card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.card-title {
+    font-weight: bold;
+}
+
+.card-text {
+    font-size: 32px;
+    font-weight: bold;
+    color: #0f11a8;
+    text-align: center; /* Horizontally center text */
+    display: flex;
+    justify-content: center; /* Vertically center text */
+    align-items: center; /* Vertically center text */
+    height: 100%;
+}
+
+.table-card {
+    border-radius: 20px;
+}

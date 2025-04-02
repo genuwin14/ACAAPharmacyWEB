@@ -1,0 +1,80 @@
+body {
+    display: flex;
+    margin: 0;
+    font-family: 'Poppins', sans-serif; /* Poppins font */
+}
+
+/* Sidebar styles */
+#sidebar {
+    width: 200px;
+    height: 100vh;
+    background-color: #ffc928;
+    color: white;
+    padding: 20px;
+    position: fixed;
+    border-bottom-right-radius: 25px;
+    border-top-right-radius: 25px;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3); /* Added box shadow */
+}
+
+#sidebar h2 {
+    text-align: center;
+    margin-top: 0;
+    font-size: 40px;
+    font-weight: bolder;
+    color: #0f11a8;
+    font-family: 'Oswald', sans-serif; /* Added 'Oswald' font family */
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Added text shadow */
+}
+
+/* Sidebar list and navigation links */
+#sidebar ul {
+    list-style-type: none;
+    margin-top: 40px;
+    padding-left: 0; /* Remove padding for left alignment */
+    text-align: left; /* Align text to the left */
+}
+
+#sidebar ul li {
+    margin: 10px 0;
+}
+
+#sidebar ul li a {
+    color: black;
+    text-decoration: none;
+    font-size: 16px;
+    display: flex;
+    align-items: center; /* Align icons with text */
+    padding: 8px 10px; /* Add some padding to the links */
+    border-radius: 5px;
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+    border-bottom: 1px solid #fff;
+    font-weight: bold;
+}
+
+/* Style icons */
+#sidebar ul li a i {
+    margin-right: 10px;
+    font-size: 20px; /* Adjust icon size */
+}
+
+/* Hover effect for links */
+#sidebar ul li a:hover {
+    background-color: #575757;
+    padding-left: 13px; /* Add extra space when hovering */
+}
+
+/* Main content styles */
+#main-content {
+    margin-left: 210px;
+    padding: 20px;
+    flex-grow: 1;
+}
+
+header {
+    text-align: center;
+    background-color: transparent; /* Ensure the background is transparent */
+    font-size: 24px;
+    box-shadow: none; /* Remove shadow if needed */
+}
+
