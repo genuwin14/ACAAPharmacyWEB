@@ -46,13 +46,15 @@ class CartController extends ResourceController
 
     public function createCart()
     {
-        // Get data from request (works for both JSON and form data)
         $data = $this->request->getJSON(true) ?? $this->request->getPost();
+        
+        $cartModel = new CartModel();
 
         // Validate required fields
         $rules = [
             'user_id' => 'required|integer',
             'inventory_id' => 'required|integer',
+            'quantity' => 'required|integer|min_length[1]',
             'status' => 'required|in_list[Cart,To ship,To receive,Completed]'
         ];
 
@@ -60,15 +62,43 @@ class CartController extends ResourceController
             return $this->failValidationErrors($this->validator->getErrors());
         }
 
-        // Insert into database
-        $cart_id = $this->model->insert($data);
+        // Check if product already exists in cart for the user
+        $existingCart = $cartModel->where([
+            'user_id' => $data['user_id'],
+            'inventory_id' => $data['inventory_id']
+        ])->first();
 
-        // Return success response
-        return $this->respondCreated([
-            'success' => true,
-            'message' => 'Cart added successfully',
-            'data' => $this->model->find($cart_id)
-        ]);
+        if ($existingCart) {
+            // If product exists, calculate the updated quantity
+            $updatedQuantity = $data['quantity'] + 1; // Increment by 1 for simplicity
+
+            return $this->respond([
+                'success' => true,
+                'message' => 'Cart updated successfully',
+                'data' => [
+                    'id' => $existingCart['id'], // Ensure 'id' is included
+                    'user_id' => $existingCart['user_id'],
+                    'inventory_id' => $existingCart['inventory_id'],
+                    'quantity' => $updatedQuantity, // Pass the updated quantity
+                    'status' => $existingCart['status']
+                ]
+            ]);
+        } else {
+            // If product does not exist, insert a new row
+            $cart_id = $cartModel->insert($data);
+
+            return $this->respondCreated([
+                'success' => true,
+                'message' => 'Cart added successfully',
+                'data' => [
+                    'id' => $cart_id, // Ensure 'id' is included
+                    'user_id' => $data['user_id'],
+                    'inventory_id' => $data['inventory_id'],
+                    'quantity' => $data['quantity'], // Pass the initial quantity
+                    'status' => $data['status']
+                ]
+            ]);
+        }
     }
 
     // ✅ Edit a Cart
