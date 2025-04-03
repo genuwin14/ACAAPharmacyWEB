@@ -46,57 +46,48 @@ class CartController extends ResourceController
 
     public function createCart()
     {
-        $data = $this->request->getJSON(true) ?? $this->request->getPost();
-        
         $cartModel = new CartModel();
 
-        // Validate required fields
-        $rules = [
-            'user_id' => 'required|integer',
-            'inventory_id' => 'required|integer',
-            'quantity' => 'required|integer|min_length[1]',
-            'status' => 'required|in_list[Cart,To ship,To receive,Completed]'
-        ];
+        // ✅ Correct way to handle JSON input
+        $json = $this->request->getJSON(true); // true = return as associative array
+        $userId = $json['user_id'] ?? null;
+        $inventoryId = $json['inventory_id'] ?? null;
 
-        if (!$this->validate($rules)) {
-            return $this->failValidationErrors($this->validator->getErrors());
+        if (!$userId || !$inventoryId) {
+            return $this->fail('User ID and Inventory ID are required.', 400);
         }
 
-        // Check if product already exists in cart for the user
-        $existingCart = $cartModel->where([
-            'user_id' => $data['user_id'],
-            'inventory_id' => $data['inventory_id']
-        ])->first();
+        // Check if product is already in cart
+        $existingCartItem = $cartModel
+            ->where('user_id', $userId)
+            ->where('inventory_id', $inventoryId)
+            ->first();
 
-        if ($existingCart) {
-            // If product exists, calculate the updated quantity
-            $updatedQuantity = $data['quantity'] + 1; // Increment by 1 for simplicity
+        if ($existingCartItem) {
+            $updatedQuantity = $existingCartItem['quantity'] + 1;
+            $cartModel->update($existingCartItem['cart_id'], [
+                'quantity' => $updatedQuantity,
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
 
             return $this->respond([
                 'success' => true,
-                'message' => 'Cart updated successfully',
-                'data' => [
-                    'id' => $existingCart['id'], // Ensure 'id' is included
-                    'user_id' => $existingCart['user_id'],
-                    'inventory_id' => $existingCart['inventory_id'],
-                    'quantity' => $updatedQuantity, // Pass the updated quantity
-                    'status' => $existingCart['status']
-                ]
+                'message' => 'Product quantity updated in cart.',
+                'quantity' => $updatedQuantity
             ]);
         } else {
-            // If product does not exist, insert a new row
-            $cart_id = $cartModel->insert($data);
+            $cartModel->insert([
+                'user_id' => $userId,
+                'inventory_id' => $inventoryId,
+                'quantity' => 1,
+                'status' => 'Cart',
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
 
             return $this->respondCreated([
                 'success' => true,
-                'message' => 'Cart added successfully',
-                'data' => [
-                    'id' => $cart_id, // Ensure 'id' is included
-                    'user_id' => $data['user_id'],
-                    'inventory_id' => $data['inventory_id'],
-                    'quantity' => $data['quantity'], // Pass the initial quantity
-                    'status' => $data['status']
-                ]
+                'message' => 'Product added to cart successfully.'
             ]);
         }
     }
@@ -116,11 +107,21 @@ class CartController extends ResourceController
     // ✅ Delete a Cart
     public function deleteCart($cart_id)
     {
-        $this->model->delete($cart_id);
+        $cartModel = new CartModel();
+        $cart = $cartModel->find($cart_id);
 
-        return $this->respondDeleted([
-            'success' => true,
-            'message' => 'Cart deleted successfully'
-        ]);
+        if (!$cart) {
+            return $this->failNotFound("Cart ID $cart_id not found.");
+        }
+
+        if ($cartModel->delete($cart_id)) {
+            return $this->respondDeleted([
+                'success' => true,
+                'message' => "Cart ID $cart_id deleted successfully."
+            ]);
+        } else {
+            return $this->fail("Failed to delete cart item.");
+        }
     }
+
 }

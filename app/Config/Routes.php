@@ -30,5 +30,5 @@ $routes->group('api', function ($routes) {
     $routes->get('cart/(:num)', 'CartController::getCart/$1');
     $routes->post('cart', 'CartController::createCart');
     $routes->post('cart/edit/(:num)', 'CartController::updateCart/$1');
-    $routes->post('cart/delete/(:num)', 'CartController::deleteCart/$1');
+    $routes->delete('cart/delete/(:num)', 'CartController::deleteCart/$1');
 });

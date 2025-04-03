@@ -13,6 +13,7 @@ class Cart extends Migration
             'user_id'    => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
             'inventory_id' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
             'status'     => ['type' => 'ENUM', 'constraint' => ['Cart', 'To ship', 'To receive', 'Completed'], 'default' => 'Cart'],
+            'quantity'   => ['type' => 'INT', 'constraint' => 100, 'default' => 1],
             'created_at' => ['type' => 'DATETIME', 'null' => true],
             'updated_at' => ['type' => 'DATETIME', 'null' => true],
         ]);

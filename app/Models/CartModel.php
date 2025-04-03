@@ -8,7 +8,7 @@ class CartModel extends Model
 {
     protected $table = 'cart';
     protected $primaryKey = 'cart_id';
-    protected $allowedFields = ['user_id', 'inventory_id', 'status', 'created_at', 'updated_at'];
+    protected $allowedFields = ['user_id', 'inventory_id', 'status', 'quantity', 'created_at', 'updated_at'];
     protected $useTimestamps = true; // Automatically handle created_at and updated_at
     protected $useSoftDeletes = false;
 
