@@ -7,6 +7,7 @@ use App\Controllers\CartController;
  * @var RouteCollection $routes
  */
 $routes->get('/', 'Admin::index');
+$routes->get('index', 'Admin::index');
 $routes->get('inventory', 'Admin::inventory');
 $routes->post('inventory/add', 'Admin::addProduct');
 $routes->post('inventory/delete', 'Admin::deleteProduct');
