@@ -4,12 +4,22 @@ namespace App\Controllers;
 
 use CodeIgniter\Controller;
 use App\Models\ProductModel;
+use App\Models\CheckoutModel;
 
 class Admin extends Controller
 {
     public function index()
     {
         return view('admin/index');
+    }
+
+    public function orders()
+    {
+        $checkoutModel = new CheckoutModel();
+        // Get all checkout records
+        $data['checkouts'] = $checkoutModel->findAll();
+
+        return view('admin/orders', $data); // Passing data to the view
     }
 
     public function inventory()

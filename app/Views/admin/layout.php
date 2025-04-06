@@ -25,7 +25,7 @@
         <h2>ACAA</h2>
         <ul>
             <li><a href="<?= base_url('index') ?>"><i class="fas fa-home"></i> HOME</a></li>
-            <li><a href="#"><i class="fas fa-box"></i> ORDERS</a></li>
+            <li><a href="<?= base_url('orders') ?>"><i class="fas fa-box"></i> ORDERS</a></li>
             <li><a href="<?= base_url('inventory') ?>"><i class="fas fa-cogs"></i> INVENTORY</a></li>
             <li><a href="#"><i class="fas fa-chart-line"></i> REPORTS</a></li>
             <li><a href="#"><i class="fas fa-users"></i> CUSTOMER</a></li>
