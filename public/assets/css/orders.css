@@ -1,0 +1,45 @@
+.card {
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3);
+}
+.datetime-picker-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    height: 100%; /* Make container stretch to the available height */
+    justify-content: space-between; /* Push the buttons to top and bottom */
+}
+
+.datetime-picker {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+}
+
+.set-pickup-btn {
+    padding: 8px;
+    font-size: 14px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.set-pickup-btn:hover {
+    background-color: #218838;
+}
+
+.product-received-btn {
+    padding: 8px;
+    font-size: 14px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.product-received-btn:hover {
+    background-color: #5a6268;
+}

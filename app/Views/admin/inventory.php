@@ -19,7 +19,7 @@
                 </div>
                 <div class="card-body">
                     <table class="table table-striped text-center align-middle">
-                        <thead>
+                        <thead class="table-dark">
                             <tr>
                                 <th>Item ID</th>
                                 <th>Product Image</th>

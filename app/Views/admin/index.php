@@ -49,7 +49,7 @@
                 </div>
                 <div class="card-body">
                     <table class="table table-striped text-center"> <!-- Centers table content -->
-                        <thead>
+                        <thead class="table-dark">
                             <tr>
                                 <th>ID</th>
                                 <th>Name</th>

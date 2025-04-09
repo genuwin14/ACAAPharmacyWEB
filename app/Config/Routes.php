@@ -8,14 +8,15 @@ use App\Controllers\CheckoutController;
  * @var RouteCollection $routes
  */
 $routes->get('/', 'Admin::index');
+$routes->get('customer', 'Admin::customer');
 $routes->get('orders', 'Admin::orders');
+$routes->post('admin/set-pickup-date', 'Admin::setPickupDate');
+$routes->post('admin/receive-product', 'Admin::receiveProduct');
 $routes->get('index', 'Admin::index');
 $routes->get('inventory', 'Admin::inventory');
 $routes->post('inventory/add', 'Admin::addProduct');
 $routes->post('inventory/delete', 'Admin::deleteProduct');
 $routes->post('inventory/edit', 'Admin::editProduct');
-
-
 
 $routes->group('api', function ($routes) {
     // User API

@@ -13,13 +13,120 @@ class Admin extends Controller
         return view('admin/index');
     }
 
+    public function customer()
+    {
+        $userModel = new \App\Models\UserModel();
+        $users = $userModel->findAll(); // fetch all users
+
+        return view('admin/customer', ['users' => $users]);
+    }
+
     public function orders()
     {
-        $checkoutModel = new CheckoutModel();
-        // Get all checkout records
-        $data['checkouts'] = $checkoutModel->findAll();
+        $checkoutModel = new \App\Models\CheckoutModel();
+        $cartModel     = new \App\Models\CartModel();
+        $productModel  = new \App\Models\ProductModel();
+        $userModel     = new \App\Models\UserModel();
 
-        return view('admin/orders', $data); // Passing data to the view
+        $checkouts = $checkoutModel->where('status', 'Pending')->findAll();
+
+        $groupedCheckouts = [];
+
+        foreach ($checkouts as $checkout) {
+            $userId = $checkout['user_id'];
+
+            $cart = $cartModel->find($checkout['cart_id']);
+            $product = $productModel->find($cart['inventory_id']);
+            $user = $userModel->find($userId);
+
+            // Add checkout_id to $item
+            $item = [
+                'checkout_id'    => $checkout['checkout_id'],  // Ensure checkout_id is included
+                'product_name'   => $product['name'] ?? 'Unknown',
+                'product_image'  => $product['image'] ?? 'default.jpg',
+                'product_price'  => $product['price'] ?? 0,
+                'quantity'       => $cart['quantity'] ?? 1,
+                'pickup_date'    => $checkout['pickup_date'],
+                'datetime_received' => $checkout['datetime_received'],
+                'total_amount'   => $checkout['total_amount'],
+            ];
+
+            if (!isset($groupedCheckouts[$userId])) {
+                $groupedCheckouts[$userId] = [
+                    'user_name' => $user['name'] ?? 'Unknown',
+                    'items'     => [],
+                    'amounts'   => [],
+                ];
+            }
+
+            // Avoid duplicate cart_id/product entry
+            $groupedCheckouts[$userId]['items'][] = $item;
+            $groupedCheckouts[$userId]['amounts'][] = $checkout['total_amount'];
+        }
+
+        // Final processing to clean up repeated total_amount
+        foreach ($groupedCheckouts as &$group) {
+            $uniqueAmounts = array_unique($group['amounts']);
+            $group['final_amount'] = count($uniqueAmounts) === 1
+                ? $uniqueAmounts[0]
+                : array_sum($group['amounts']);
+        }
+
+        $data['groupedCheckouts'] = $groupedCheckouts;
+
+        return view('admin/orders', $data);
+    }
+
+    public function setPickupDate()
+    {
+        $checkoutModel = new \App\Models\CheckoutModel();
+        
+        // Get form inputs
+        $pickupDate = $this->request->getPost('pickup_date');
+        $checkoutIds = $this->request->getPost('checkout_ids'); // Array of checkout_ids
+        
+        // Validate the input (check if the pickup_date is provided)
+        if ($pickupDate && !empty($checkoutIds)) {
+            // Update the checkout records with the selected pickup date
+            foreach ($checkoutIds as $checkoutId) {
+                $checkoutModel->update($checkoutId, [
+                    'pickup_date' => $pickupDate
+                ]);
+            }
+            
+            // Redirect back to the orders page (or wherever appropriate)
+            return redirect()->to('/orders')->with('message', 'Pickup date updated successfully');
+        }
+        
+        // If no pickup date was provided, return an error
+        return redirect()->to('/orders')->with('error', 'Failed to update pickup date');
+    }
+
+    public function receiveProduct()
+    {
+        $checkoutModel = new \App\Models\CheckoutModel();
+
+        // Get the current datetime for received products
+        $datetimeReceived = date('Y-m-d H:i:s');
+
+        // Get the list of checkout_ids (array of selected products)
+        $checkoutIds = $this->request->getPost('checkout_ids');
+
+        if (!empty($checkoutIds)) {
+            foreach ($checkoutIds as $checkoutId) {
+                // Update the datetime_received and status fields for each selected product
+                $checkoutModel->update($checkoutId, [
+                    'datetime_received' => $datetimeReceived,
+                    'status'            => 'Received'  // Update the status to 'Received'
+                ]);
+            }
+
+            // Redirect back to the orders page with a success message
+            return redirect()->to('/orders')->with('message', 'Product(s) marked as received successfully');
+        }
+
+        // If no checkout IDs are provided, redirect back with an error
+        return redirect()->to('/orders')->with('error', 'Failed to mark product(s) as received');
     }
 
     public function inventory()
